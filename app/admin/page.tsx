@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+import { requireAdmin } from "@/lib/auth-helpers"
 import { createClient } from "@/lib/supabase/server"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,22 +27,7 @@ async function getAdminStats() {
 }
 
 export default async function AdminDashboard() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
-  }
-
-  // Check if user is admin
-  const { data: adminRole } = await supabase.from("admin_roles").select("role").eq("user_id", user.id).single()
-
-  if (!adminRole) {
-    redirect("/dashboard")
-  }
+  await requireAdmin()
 
   const stats = await getAdminStats()
 

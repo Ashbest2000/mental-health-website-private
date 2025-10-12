@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Brain, Heart, Zap, Clock, Shield } from "lucide-react"
+import { requireAuth } from "@/lib/auth-helpers"
 
 export default async function AssessmentsPage() {
+  await requireAuth()
+
   const supabase = await createClient()
 
   const {

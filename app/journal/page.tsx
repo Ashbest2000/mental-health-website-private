@@ -1,10 +1,10 @@
-import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { BookOpen, Plus, Calendar, Smile, Meh, Frown } from "lucide-react"
+import { requireAuth } from "@/lib/auth-helpers"
 
 const getMoodIcon = (mood: string) => {
   switch (mood) {
@@ -22,15 +22,9 @@ const getMoodIcon = (mood: string) => {
 }
 
 export default async function JournalPage() {
+  const user = await requireAuth()
+
   const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
-  }
 
   const { data: entries } = await supabase
     .from("journal_entries")

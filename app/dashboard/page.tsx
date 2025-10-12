@@ -1,21 +1,15 @@
-import { redirect } from "next/navigation"
+import { requireAuth } from "@/lib/auth-helpers"
 import { createClient } from "@/lib/supabase/server"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Brain, MessageCircle, BookOpen, MapPin, AlertCircle, TrendingUp, Shield } from "lucide-react"
+import { Brain, MessageCircle, BookOpen, MapPin, AlertCircle, TrendingUp, Shield, Sun } from "lucide-react"
 
 export default async function DashboardPage() {
+  const user = await requireAuth()
+
   const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
-  }
 
   // Fetch user profile
   const { data: profile } = await supabase.from("user_profiles").select("*").eq("id", user.id).single()
@@ -37,22 +31,28 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-secondary/5">
       <Navigation isLoggedIn={true} isAdmin={!!adminRole} />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile?.full_name || "Friend"}</h1>
-          <p className="text-muted-foreground">How are you feeling today?</p>
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border border-primary/20">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Welcome back, {profile?.full_name || "Friend"}
+          </h1>
+          <p className="text-muted-foreground flex items-center gap-2">
+            <Sun className="h-5 w-5 text-secondary" />
+            How are you feeling today?
+          </p>
         </div>
 
-        {/* Quick Actions */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Link href="/assessments">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-primary/50 group overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-primary to-primary/50"></div>
               <CardHeader>
-                <Brain className="h-8 w-8 text-primary mb-2" />
+                <div className="p-3 bg-primary/10 rounded-xl w-fit mb-2 group-hover:scale-110 transition-transform">
+                  <Brain className="h-8 w-8 text-primary" />
+                </div>
                 <CardTitle className="text-lg">Take Assessment</CardTitle>
                 <CardDescription>Screen for ADHD, depression, or anxiety</CardDescription>
               </CardHeader>
@@ -60,9 +60,12 @@ export default async function DashboardPage() {
           </Link>
 
           <Link href="/chat">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-secondary/50 group overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-secondary to-secondary/50"></div>
               <CardHeader>
-                <MessageCircle className="h-8 w-8 text-primary mb-2" />
+                <div className="p-3 bg-secondary/10 rounded-xl w-fit mb-2 group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-8 w-8 text-secondary" />
+                </div>
                 <CardTitle className="text-lg">Chat with AI</CardTitle>
                 <CardDescription>24/7 support and coping strategies</CardDescription>
               </CardHeader>
@@ -70,9 +73,12 @@ export default async function DashboardPage() {
           </Link>
 
           <Link href="/journal">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-accent/50 group overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-accent to-accent/50"></div>
               <CardHeader>
-                <BookOpen className="h-8 w-8 text-primary mb-2" />
+                <div className="p-3 bg-accent/10 rounded-xl w-fit mb-2 group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-8 w-8 text-accent" />
+                </div>
                 <CardTitle className="text-lg">Write in Journal</CardTitle>
                 <CardDescription>Express your thoughts privately</CardDescription>
               </CardHeader>
@@ -80,9 +86,12 @@ export default async function DashboardPage() {
           </Link>
 
           <Link href="/institutions">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-chart-5/50 group overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-chart-5 to-chart-5/50"></div>
               <CardHeader>
-                <MapPin className="h-8 w-8 text-primary mb-2" />
+                <div className="p-3 bg-chart-5/10 rounded-xl w-fit mb-2 group-hover:scale-110 transition-transform">
+                  <MapPin className="h-8 w-8 text-chart-5" />
+                </div>
                 <CardTitle className="text-lg">Find Help</CardTitle>
                 <CardDescription>Locate mental health services</CardDescription>
               </CardHeader>
@@ -91,7 +100,7 @@ export default async function DashboardPage() {
         </div>
 
         {adminRole && (
-          <Card className="mb-8 bg-primary/5 border-primary/20">
+          <Card className="mb-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-2 border-primary/30 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
@@ -113,7 +122,7 @@ export default async function DashboardPage() {
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Recent Assessments */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 border-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
@@ -156,7 +165,7 @@ export default async function DashboardPage() {
 
           {/* Journal Stats & Quick Links */}
           <div className="space-y-6">
-            <Card>
+            <Card className="border-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
@@ -174,7 +183,7 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-accent/10 border-accent/20">
+            <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-accent">
                   <AlertCircle className="h-5 w-5" />

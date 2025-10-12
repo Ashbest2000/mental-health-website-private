@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { streamText } from "ai"
+import { streamText, type UIMessage, convertToModelMessages, consumeStream } from "ai"
 
 export const maxDuration = 30
 
@@ -14,10 +14,23 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 })
   }
 
-  const { messages } = await req.json()
+  const { messages }: { messages: UIMessage[] } = await req.json()
 
   // Analyze messages for crisis indicators
-  const userMessages = messages.filter((m: any) => m.role === "user").map((m: any) => m.content.toLowerCase())
+  const userMessages = messages
+    .filter((m) => m.role === "user")
+    .map((m) => {
+      // Handle both string content and parts array
+      if (typeof m.content === "string") {
+        return m.content.toLowerCase()
+      }
+      // For UIMessage with parts
+      const textParts = m.parts?.filter((p: any) => p.type === "text") || []
+      return textParts
+        .map((p: any) => p.text)
+        .join(" ")
+        .toLowerCase()
+    })
 
   const crisisKeywords = [
     "suicide",
@@ -52,19 +65,37 @@ export async function POST(req: Request) {
     })
 
     // Save message with crisis flag
+    const lastMessage = messages[messages.length - 1]
+    const lastMessageContent =
+      typeof lastMessage.content === "string"
+        ? lastMessage.content
+        : lastMessage.parts
+            ?.filter((p: any) => p.type === "text")
+            .map((p: any) => p.text)
+            .join(" ") || ""
+
     await supabase.from("chat_messages").insert({
       user_id: user.id,
       role: "user",
-      content: messages[messages.length - 1].content,
+      content: lastMessageContent,
       risk_level: "critical",
       flagged_for_review: true,
     })
   } else {
     // Save regular message
+    const lastMessage = messages[messages.length - 1]
+    const lastMessageContent =
+      typeof lastMessage.content === "string"
+        ? lastMessage.content
+        : lastMessage.parts
+            ?.filter((p: any) => p.type === "text")
+            .map((p: any) => p.text)
+            .join(" ") || ""
+
     await supabase.from("chat_messages").insert({
       user_id: user.id,
       role: "user",
-      content: messages[messages.length - 1].content,
+      content: lastMessageContent,
       risk_level: "none",
     })
   }
@@ -110,10 +141,11 @@ Start your response with [CRISIS_DETECTED] so the UI can show emergency resource
 
 Remember: You provide support and information, but you are not a replacement for professional mental health care.`
 
-  const result = await streamText({
+  const result = streamText({
     model: "openai/gpt-4o-mini",
     system: systemPrompt,
-    messages,
+    messages: convertToModelMessages(messages),
+    abortSignal: req.signal,
   })
 
   // Save assistant response after streaming completes
@@ -126,5 +158,7 @@ Remember: You provide support and information, but you are not a replacement for
     })
   })
 
-  return result.toDataStreamResponse()
+  return result.toUIMessageStreamResponse({
+    consumeSseStream: consumeStream,
+  })
 }
