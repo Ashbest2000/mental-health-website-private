@@ -2,7 +2,20 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Navigation } from "@/components/navigation"
-import { Brain, MessageCircle, BookOpen, Users, MapPin, Shield, Heart, Phone, Sparkles, Sun } from "lucide-react"
+import {
+  Brain,
+  MessageCircle,
+  BookOpen,
+  Users,
+  MapPin,
+  Shield,
+  Heart,
+  Phone,
+  Sparkles,
+  Stethoscope,
+  Lightbulb,
+  TestTube,
+} from "lucide-react"
 
 export default function HomePage() {
   return (
@@ -73,16 +86,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* TREATMENT SECTION */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 rounded-full text-secondary font-medium text-sm mb-4">
-            <Sun className="h-4 w-4" />
-            Comprehensive Support Tools
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-medium text-sm mb-4">
+            <Stethoscope className="h-4 w-4" />
+            Treatment & Support
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">How We Support You</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Mental Health Treatment & Support</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
-            Comprehensive mental health tools designed for privacy, accessibility, and real support
+            Access comprehensive treatment resources, professional guidance, and 24/7 support to help you on your mental
+            health journey
           </p>
         </div>
 
@@ -91,21 +105,7 @@ export default function HomePage() {
             <div className="h-2 bg-gradient-to-r from-primary to-primary/50"></div>
             <CardHeader>
               <div className="p-3 bg-primary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
-                <Brain className="h-10 w-10 text-primary" />
-              </div>
-              <CardTitle>AI Assessments</CardTitle>
-              <CardDescription>
-                Take validated screening tests for ADHD, depression, and anxiety. Get instant results and personalized
-                recommendations.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="border-2 hover:border-secondary/50 transition-all hover:shadow-lg group overflow-hidden">
-            <div className="h-2 bg-gradient-to-r from-secondary to-secondary/50"></div>
-            <CardHeader>
-              <div className="p-3 bg-secondary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
-                <MessageCircle className="h-10 w-10 text-secondary" />
+                <MessageCircle className="h-10 w-10 text-primary" />
               </div>
               <CardTitle>24/7 AI Chat Support</CardTitle>
               <CardDescription>
@@ -113,20 +113,55 @@ export default function HomePage() {
                 situations.
               </CardDescription>
             </CardHeader>
+            <div className="px-6 pb-6">
+              <Link href="/chat">
+                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                  Start Chatting
+                </Button>
+              </Link>
+            </div>
+          </Card>
+
+          <Card className="border-2 hover:border-secondary/50 transition-all hover:shadow-lg group overflow-hidden">
+            <div className="h-2 bg-gradient-to-r from-secondary to-secondary/50"></div>
+            <CardHeader>
+              <div className="p-3 bg-secondary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                <BookOpen className="h-10 w-10 text-secondary" />
+              </div>
+              <CardTitle>Guides & Resources</CardTitle>
+              <CardDescription>
+                Access comprehensive guides, coping strategies, and educational resources to help you understand and
+                manage your mental health.
+              </CardDescription>
+            </CardHeader>
+            <div className="px-6 pb-6">
+              <Link href="/resources">
+                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                  View Resources
+                </Button>
+              </Link>
+            </div>
           </Card>
 
           <Card className="border-2 hover:border-accent/50 transition-all hover:shadow-lg group overflow-hidden">
             <div className="h-2 bg-gradient-to-r from-accent to-accent/50"></div>
             <CardHeader>
               <div className="p-3 bg-accent/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
-                <BookOpen className="h-10 w-10 text-accent" />
+                <MapPin className="h-10 w-10 text-accent" />
               </div>
-              <CardTitle>Private Journal</CardTitle>
+              <CardTitle>Find Professional Help</CardTitle>
               <CardDescription>
-                Express your thoughts in a secure, encrypted journal. Track your mood and mental health journey over
-                time.
+                Discover mental health professionals, clinics, and hospitals near you in Dhaka with contact information
+                and services.
               </CardDescription>
             </CardHeader>
+            <div className="px-6 pb-6">
+              <Link href="/institutions">
+                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                  Find Help Near You
+                </Button>
+              </Link>
+            </div>
           </Card>
 
           <Card className="border-2 hover:border-chart-4/50 transition-all hover:shadow-lg group overflow-hidden">
@@ -141,20 +176,34 @@ export default function HomePage() {
                 care.
               </CardDescription>
             </CardHeader>
+            <div className="px-6 pb-6">
+              <Link href="/volunteer/dashboard">
+                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                  Connect with Volunteers
+                </Button>
+              </Link>
+            </div>
           </Card>
 
           <Card className="border-2 hover:border-chart-5/50 transition-all hover:shadow-lg group overflow-hidden">
             <div className="h-2 bg-gradient-to-r from-chart-5 to-chart-5/50"></div>
             <CardHeader>
               <div className="p-3 bg-chart-5/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
-                <MapPin className="h-10 w-10 text-chart-5" />
+                <Heart className="h-10 w-10 text-chart-5" />
               </div>
-              <CardTitle>Find Local Help</CardTitle>
+              <CardTitle>Private Journal</CardTitle>
               <CardDescription>
-                Discover mental health professionals, clinics, and hospitals near you in Dhaka with contact information
-                and services.
+                Express your thoughts in a secure, encrypted journal. Track your mood and mental health journey over
+                time.
               </CardDescription>
             </CardHeader>
+            <div className="px-6 pb-6">
+              <Link href="/journal">
+                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                  Start Journaling
+                </Button>
+              </Link>
+            </div>
           </Card>
 
           <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-lg group overflow-hidden">
@@ -169,10 +218,168 @@ export default function HomePage() {
                 yours alone.
               </CardDescription>
             </CardHeader>
+            <div className="px-6 pb-6">
+              <Button variant="outline" size="sm" className="w-full bg-transparent" disabled>
+                Always Protected
+              </Button>
+            </div>
           </Card>
         </div>
       </section>
 
+      {/* TEST SECTION */}
+      <section className="bg-gradient-to-r from-secondary/10 via-background to-primary/10 border-y border-secondary/20">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 rounded-full text-secondary font-medium text-sm mb-4">
+              <TestTube className="h-4 w-4" />
+              Preliminary Screening Tests
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Check Your Mental Health</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
+              Take validated preliminary screening tests to understand your mental health better. These tests are not
+              diagnoses but can help you identify if you should seek professional evaluation.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-primary to-primary/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Brain className="h-10 w-10 text-primary" />
+                </div>
+                <CardTitle>ADHD Screening</CardTitle>
+                <CardDescription>
+                  Take the ASRS-6 screening test to assess for symptoms of Attention-Deficit/Hyperactivity Disorder.
+                  Quick and confidential.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments/adhd">
+                  <Button size="sm" className="w-full">
+                    Take ADHD Test
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-2 hover:border-secondary/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-secondary to-secondary/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-secondary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Lightbulb className="h-10 w-10 text-secondary" />
+                </div>
+                <CardTitle>Depression Screening</CardTitle>
+                <CardDescription>
+                  Use the PHQ-9 test to screen for depressive symptoms. Get instant results and personalized
+                  recommendations.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments/depression">
+                  <Button size="sm" className="w-full">
+                    Take Depression Test
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-2 hover:border-accent/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-accent to-accent/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-accent/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Heart className="h-10 w-10 text-accent" />
+                </div>
+                <CardTitle>Anxiety Screening</CardTitle>
+                <CardDescription>
+                  Take the GAD-7 test to assess for generalized anxiety symptoms. Understand your anxiety levels better.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments/anxiety">
+                  <Button size="sm" className="w-full">
+                    Take Anxiety Test
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-2 hover:border-chart-4/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-chart-4 to-chart-4/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-chart-4/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Brain className="h-10 w-10 text-chart-4" />
+                </div>
+                <CardTitle>Autism Spectrum Screening</CardTitle>
+                <CardDescription>
+                  Preliminary screening for autism spectrum characteristics. Helps identify if professional evaluation
+                  is needed.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments">
+                  <Button size="sm" className="w-full bg-transparent" variant="outline">
+                    Coming Soon
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-2 hover:border-chart-5/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-chart-5 to-chart-5/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-chart-5/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Stethoscope className="h-10 w-10 text-chart-5" />
+                </div>
+                <CardTitle>Schizophrenia Screening</CardTitle>
+                <CardDescription>
+                  Preliminary screening for psychotic symptoms. Important for early identification and professional
+                  support.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments">
+                  <Button size="sm" className="w-full bg-transparent" variant="outline">
+                    Coming Soon
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <TestTube className="h-10 w-10 text-primary" />
+                </div>
+                <CardTitle>All Assessments</CardTitle>
+                <CardDescription>
+                  View all available screening tests and track your assessment history. Compare results over time.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments">
+                  <Button size="sm" className="w-full">
+                    View All Tests
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-12 p-6 bg-background/50 rounded-lg border border-border">
+            <p className="text-sm text-muted-foreground text-center">
+              <span className="font-semibold">Important:</span> These screening tests are preliminary tools designed to
+              help you understand your mental health better. They are not medical diagnoses. If you have concerns about
+              your mental health, please consult with a qualified mental health professional for proper evaluation and
+              treatment.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Community Section */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="relative order-2 lg:order-1">

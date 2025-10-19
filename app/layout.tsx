@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "MindCare Dhaka - Mental Health Support",
@@ -18,10 +19,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem themes={["light", "dark", "midnight"]}>
+          <Suspense fallback={null}>{children}</Suspense>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Heart, Menu, X, Shield } from "lucide-react"
 import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Navigation({ isLoggedIn = false, isAdmin = false }: { isLoggedIn?: boolean; isAdmin?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -48,6 +49,7 @@ export function Navigation({ isLoggedIn = false, isAdmin = false }: { isLoggedIn
                     Admin
                   </Link>
                 )}
+                <ThemeToggle />
                 <form action="/auth/logout" method="POST">
                   <Button variant="outline" size="sm" className="bg-transparent">
                     Logout
@@ -65,6 +67,7 @@ export function Navigation({ isLoggedIn = false, isAdmin = false }: { isLoggedIn
                 <Link href="/volunteer" className="text-sm font-medium hover:text-primary transition-colors">
                   Volunteer
                 </Link>
+                <ThemeToggle />
                 <Link href="/auth/login">
                   <Button variant="outline" size="sm" className="bg-transparent">
                     Sign In
@@ -142,6 +145,9 @@ export function Navigation({ isLoggedIn = false, isAdmin = false }: { isLoggedIn
                     </span>
                   </Link>
                 )}
+                <div className="py-2">
+                  <ThemeToggle />
+                </div>
                 <form action="/auth/logout" method="POST">
                   <Button variant="outline" size="sm" className="w-full bg-transparent">
                     Logout
@@ -171,6 +177,9 @@ export function Navigation({ isLoggedIn = false, isAdmin = false }: { isLoggedIn
                 >
                   Volunteer
                 </Link>
+                <div className="py-2">
+                  <ThemeToggle />
+                </div>
                 <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" size="sm" className="w-full bg-transparent">
                     Sign In
