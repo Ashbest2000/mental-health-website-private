@@ -102,8 +102,11 @@ export default function AnxietyAssessmentPage() {
                 <RadioGroup value={answers[currentQuestion]} onValueChange={handleAnswer}>
                   {OPTIONS.map((option) => (
                     <div key={option.value} className="flex items-center space-x-3 space-y-0">
-                      <RadioGroupItem value={option.value} id={`option-${option.value}`} />
-                      <Label htmlFor={`option-${option.value}`} className="font-normal cursor-pointer">
+                      <RadioGroupItem value={option.value} id={`option-${currentQuestion}-${option.value}`} />
+                      <Label
+                        htmlFor={`option-${currentQuestion}-${option.value}`}
+                        className="font-normal cursor-pointer"
+                      >
                         {option.label}
                       </Label>
                     </div>

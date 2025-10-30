@@ -56,7 +56,7 @@ ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE content ENABLE ROW LEVEL SECURITY;
 
 -- Admin roles policies
-CREATE POLICY "Super admins can manage all roles" ON admin_roles
+CREATE POLICY IF NOT EXISTS "Super admins can manage all roles" ON admin_roles
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM admin_roles ar
@@ -65,7 +65,7 @@ CREATE POLICY "Super admins can manage all roles" ON admin_roles
   );
 
 -- Audit logs policies
-CREATE POLICY "Admins can view audit logs" ON audit_logs
+CREATE POLICY IF NOT EXISTS "Admins can view audit logs" ON audit_logs
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM admin_roles
@@ -73,14 +73,14 @@ CREATE POLICY "Admins can view audit logs" ON audit_logs
     )
   );
 
-CREATE POLICY "System can insert audit logs" ON audit_logs
+CREATE POLICY IF NOT EXISTS "System can insert audit logs" ON audit_logs
   FOR INSERT WITH CHECK (true);
 
 -- Subscriptions policies
-CREATE POLICY "Users can view own subscriptions" ON subscriptions
+CREATE POLICY IF NOT EXISTS "Users can view own subscriptions" ON subscriptions
   FOR SELECT USING (user_id = auth.uid());
 
-CREATE POLICY "Admins can view all subscriptions" ON subscriptions
+CREATE POLICY IF NOT EXISTS "Admins can view all subscriptions" ON subscriptions
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM admin_roles
@@ -89,10 +89,10 @@ CREATE POLICY "Admins can view all subscriptions" ON subscriptions
   );
 
 -- Content policies
-CREATE POLICY "Anyone can view published content" ON content
+CREATE POLICY IF NOT EXISTS "Anyone can view published content" ON content
   FOR SELECT USING (published = true);
 
-CREATE POLICY "Content admins can manage content" ON content
+CREATE POLICY IF NOT EXISTS "Content admins can manage content" ON content
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM admin_roles

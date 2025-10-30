@@ -10,39 +10,41 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { saveAssessmentResult } from "@/app/actions/assessments"
 
-const PHQ9_QUESTIONS = [
-  "Little interest or pleasure in doing things",
-  "Feeling down, depressed, or hopeless",
-  "Trouble falling or staying asleep, or sleeping too much",
-  "Feeling tired or having little energy",
-  "Poor appetite or overeating",
-  "Feeling bad about yourself - or that you are a failure or have let yourself or your family down",
-  "Trouble concentrating on things, such as reading the newspaper or watching television",
-  "Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
-  "Thoughts that you would be better off dead, or of hurting yourself",
+const PSYRATS_QUESTIONS = [
+  "Have you experienced hearing voices that others cannot hear?",
+  "Do you see things that others do not see?",
+  "Do you believe that people are trying to harm you or plot against you?",
+  "Do you feel that your thoughts are being controlled by outside forces?",
+  "Do you believe you have special powers or abilities that others do not have?",
+  "Do you feel confused or disoriented about time, place, or who you are?",
+  "Have you experienced sudden changes in your mood without clear reason?",
+  "Do you find it difficult to concentrate or organize your thoughts?",
+  "Do you feel withdrawn or lose interest in activities you normally enjoy?",
+  "Have you experienced unusual or bizarre thoughts that seem out of your control?",
 ]
 
 const OPTIONS = [
   { value: "0", label: "Not at all" },
-  { value: "1", label: "Several days" },
-  { value: "2", label: "More than half the days" },
-  { value: "3", label: "Nearly every day" },
+  { value: "1", label: "Rarely" },
+  { value: "2", label: "Sometimes" },
+  { value: "3", label: "Often" },
+  { value: "4", label: "Very often" },
 ]
 
-export default function DepressionAssessmentPage() {
+export default function SchizophreniaAssessmentPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const progress = ((currentQuestion + 1) / PHQ9_QUESTIONS.length) * 100
+  const progress = ((currentQuestion + 1) / PSYRATS_QUESTIONS.length) * 100
 
   const handleAnswer = (value: string) => {
     setAnswers({ ...answers, [currentQuestion]: value })
   }
 
   const handleNext = () => {
-    if (currentQuestion < PHQ9_QUESTIONS.length - 1) {
+    if (currentQuestion < PSYRATS_QUESTIONS.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     }
   }
@@ -58,14 +60,13 @@ export default function DepressionAssessmentPage() {
     const score = Object.values(answers).reduce((sum, val) => sum + Number.parseInt(val), 0)
 
     let severity = "minimal"
-    if (score >= 20) severity = "severe"
-    else if (score >= 15) severity = "moderately severe"
-    else if (score >= 10) severity = "moderate"
-    else if (score >= 5) severity = "mild"
+    if (score >= 30) severity = "severe"
+    else if (score >= 20) severity = "moderate"
+    else if (score >= 10) severity = "mild"
 
     try {
       const result = await saveAssessmentResult({
-        testType: "depression",
+        testType: "schizophrenia",
         score,
         severity,
         responses: answers,
@@ -79,7 +80,7 @@ export default function DepressionAssessmentPage() {
   }
 
   const isAnswered = answers[currentQuestion] !== undefined
-  const allAnswered = Object.keys(answers).length === PHQ9_QUESTIONS.length
+  const allAnswered = Object.keys(answers).length === PSYRATS_QUESTIONS.length
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,18 +90,19 @@ export default function DepressionAssessmentPage() {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Depression Screening (PHQ-9)</CardTitle>
+              <CardTitle>Psychotic Symptoms Screening</CardTitle>
               <CardDescription>
-                Over the last 2 weeks, how often have you been bothered by the following problems?
+                This screening helps identify potential psychotic symptoms. Please answer honestly. If you're
+                experiencing severe symptoms, please seek immediate professional help.
               </CardDescription>
               <Progress value={progress} className="mt-4" />
               <p className="text-sm text-muted-foreground mt-2">
-                Question {currentQuestion + 1} of {PHQ9_QUESTIONS.length}
+                Question {currentQuestion + 1} of {PSYRATS_QUESTIONS.length}
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-medium leading-relaxed">{PHQ9_QUESTIONS[currentQuestion]}</h3>
+                <h3 className="text-lg font-medium leading-relaxed">{PSYRATS_QUESTIONS[currentQuestion]}</h3>
 
                 <RadioGroup value={answers[currentQuestion]} onValueChange={handleAnswer}>
                   {OPTIONS.map((option) => (
@@ -121,7 +123,7 @@ export default function DepressionAssessmentPage() {
                 <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0}>
                   Previous
                 </Button>
-                {currentQuestion < PHQ9_QUESTIONS.length - 1 ? (
+                {currentQuestion < PSYRATS_QUESTIONS.length - 1 ? (
                   <Button onClick={handleNext} disabled={!isAnswered} className="flex-1">
                     Next Question
                   </Button>

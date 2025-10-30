@@ -65,6 +65,34 @@ export async function saveAssessmentResult({
       recommendations =
         "Your results suggest minimal ADHD symptoms. If you're experiencing difficulties with attention or organization, consider exploring productivity techniques and organizational tools. Our resources can provide helpful strategies."
     }
+  } else if (testType === "autism") {
+    if (severity === "high") {
+      recommendations =
+        "Your responses suggest traits commonly associated with autism spectrum. We recommend consulting with a specialist who can conduct a comprehensive evaluation. Many autistic individuals benefit from understanding their neurodivergence and accessing appropriate support. Consider reaching out to autism advocacy organizations or specialists in Dhaka for further assessment and support strategies."
+    } else if (severity === "moderate") {
+      recommendations =
+        "You're showing some traits associated with autism spectrum. A professional evaluation can help determine if you're autistic and what support might be helpful. Many people find that understanding their neurodivergence improves their quality of life. Our resources have information about autism and neurodiversity."
+    } else if (severity === "mild") {
+      recommendations =
+        "You're showing some autistic traits. If you're curious about autism or experiencing challenges, consider speaking with a mental health professional. Self-understanding and acceptance are important. Our resources section has helpful information about neurodiversity."
+    } else {
+      recommendations =
+        "Your results suggest minimal autistic traits. If you have concerns about autism or neurodevelopment, a professional can provide clarity. Remember that neurodiversity is a natural part of human variation."
+    }
+  } else if (testType === "schizophrenia") {
+    if (severity === "severe") {
+      recommendations =
+        "Your responses suggest significant psychotic symptoms. This requires immediate professional evaluation and support. Please contact a mental health professional, psychiatrist, or visit an emergency service if you're in crisis. Psychotic symptoms are treatable, and early intervention is important. Reach out to NIMH or Bangabandhu Sheikh Mujib Medical University for urgent support."
+    } else if (severity === "moderate") {
+      recommendations =
+        "Your responses suggest some psychotic symptoms that warrant professional evaluation. Please schedule an appointment with a psychiatrist or mental health professional as soon as possible. Early intervention can be very helpful. In the meantime, maintain regular sleep, avoid stress, and reach out to trusted people for support."
+    } else if (severity === "mild") {
+      recommendations =
+        "You're experiencing some symptoms that could benefit from professional evaluation. Consider speaking with a mental health professional to discuss your experiences. Stress management and healthy lifestyle habits can be supportive. Our resources have information about managing mental health."
+    } else {
+      recommendations =
+        "Your results suggest minimal psychotic symptoms. If you're experiencing any concerning thoughts or perceptions, don't hesitate to reach out to a mental health professional. Our resources and support services are available to help."
+    }
   }
 
   const { data, error } = await supabase

@@ -10,39 +10,40 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { saveAssessmentResult } from "@/app/actions/assessments"
 
-const PHQ9_QUESTIONS = [
-  "Little interest or pleasure in doing things",
-  "Feeling down, depressed, or hopeless",
-  "Trouble falling or staying asleep, or sleeping too much",
-  "Feeling tired or having little energy",
-  "Poor appetite or overeating",
-  "Feeling bad about yourself - or that you are a failure or have let yourself or your family down",
-  "Trouble concentrating on things, such as reading the newspaper or watching television",
-  "Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
-  "Thoughts that you would be better off dead, or of hurting yourself",
+const AQ10_QUESTIONS = [
+  "I prefer to do things with others rather than on my own",
+  "I prefer to do things the same way over and over again",
+  "If I try to imagine something, I find it very easy to create a picture in my mind",
+  "I frequently get so strongly absorbed in one thing that I lose sight of other things",
+  "I often notice small sounds when others do not",
+  "I usually notice car number plates or similar strings of information",
+  "Other people frequently tell me that what I've said is impolite, even though I think it is polite",
+  "When I'm reading a story, I can easily imagine what the characters might look like",
+  "I am fascinated by numbers",
+  "When I'm in a social group, I can easily keep track of several different people's conversations",
 ]
 
 const OPTIONS = [
-  { value: "0", label: "Not at all" },
-  { value: "1", label: "Several days" },
-  { value: "2", label: "More than half the days" },
-  { value: "3", label: "Nearly every day" },
+  { value: "0", label: "Definitely disagree" },
+  { value: "1", label: "Slightly disagree" },
+  { value: "2", label: "Slightly agree" },
+  { value: "3", label: "Definitely agree" },
 ]
 
-export default function DepressionAssessmentPage() {
+export default function AutismAssessmentPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const progress = ((currentQuestion + 1) / PHQ9_QUESTIONS.length) * 100
+  const progress = ((currentQuestion + 1) / AQ10_QUESTIONS.length) * 100
 
   const handleAnswer = (value: string) => {
     setAnswers({ ...answers, [currentQuestion]: value })
   }
 
   const handleNext = () => {
-    if (currentQuestion < PHQ9_QUESTIONS.length - 1) {
+    if (currentQuestion < AQ10_QUESTIONS.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     }
   }
@@ -58,14 +59,13 @@ export default function DepressionAssessmentPage() {
     const score = Object.values(answers).reduce((sum, val) => sum + Number.parseInt(val), 0)
 
     let severity = "minimal"
-    if (score >= 20) severity = "severe"
-    else if (score >= 15) severity = "moderately severe"
-    else if (score >= 10) severity = "moderate"
-    else if (score >= 5) severity = "mild"
+    if (score >= 30) severity = "high"
+    else if (score >= 20) severity = "moderate"
+    else if (score >= 10) severity = "mild"
 
     try {
       const result = await saveAssessmentResult({
-        testType: "depression",
+        testType: "autism",
         score,
         severity,
         responses: answers,
@@ -79,7 +79,7 @@ export default function DepressionAssessmentPage() {
   }
 
   const isAnswered = answers[currentQuestion] !== undefined
-  const allAnswered = Object.keys(answers).length === PHQ9_QUESTIONS.length
+  const allAnswered = Object.keys(answers).length === AQ10_QUESTIONS.length
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,18 +89,19 @@ export default function DepressionAssessmentPage() {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Depression Screening (PHQ-9)</CardTitle>
+              <CardTitle>Autism Spectrum Screening (AQ-10)</CardTitle>
               <CardDescription>
-                Over the last 2 weeks, how often have you been bothered by the following problems?
+                This screening helps identify traits associated with autism spectrum. Please answer honestly based on
+                your experiences.
               </CardDescription>
               <Progress value={progress} className="mt-4" />
               <p className="text-sm text-muted-foreground mt-2">
-                Question {currentQuestion + 1} of {PHQ9_QUESTIONS.length}
+                Question {currentQuestion + 1} of {AQ10_QUESTIONS.length}
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-medium leading-relaxed">{PHQ9_QUESTIONS[currentQuestion]}</h3>
+                <h3 className="text-lg font-medium leading-relaxed">{AQ10_QUESTIONS[currentQuestion]}</h3>
 
                 <RadioGroup value={answers[currentQuestion]} onValueChange={handleAnswer}>
                   {OPTIONS.map((option) => (
@@ -121,7 +122,7 @@ export default function DepressionAssessmentPage() {
                 <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0}>
                   Previous
                 </Button>
-                {currentQuestion < PHQ9_QUESTIONS.length - 1 ? (
+                {currentQuestion < AQ10_QUESTIONS.length - 1 ? (
                   <Button onClick={handleNext} disabled={!isAnswered} className="flex-1">
                     Next Question
                   </Button>

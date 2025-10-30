@@ -1,8 +1,13 @@
-import { createClient } from "@/lib/supabase/server"
+"use client"
+
+import { useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Video, FileText, Phone } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { BookOpen, Video, FileText, Phone, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
+import { useEffect } from "react"
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
@@ -17,12 +22,37 @@ const getCategoryIcon = (category: string) => {
   }
 }
 
-export default async function ResourcesPage() {
-  const supabase = await createClient()
+interface Resource {
+  id: string
+  title: string
+  description: string
+  category: string
+  language: string
+  tags: string[]
+  content_url?: string
+}
 
-  const { data: resources } = await supabase.from("resources").select("*").order("created_at", { ascending: false })
+export default function ResourcesPage() {
+  const [resources, setResources] = useState<Resource[]>([])
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      const supabase = createClient()
+      const { data } = await supabase.from("resources").select("*").order("created_at", { ascending: false })
+      setResources(data || [])
+      setLoading(false)
+    }
+
+    fetchResources()
+  }, [])
 
   const categories = ["guide", "article", "video", "hotline"]
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,23 +81,58 @@ export default async function ResourcesPage() {
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {categoryResources.map((resource) => (
-                    <Card key={resource.id} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={resource.id}
+                      className="hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => toggleExpand(resource.id)}
+                    >
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-lg">{resource.title}</CardTitle>
-                          {resource.language === "bn" && <Badge variant="secondary">বাংলা</Badge>}
+                          <CardTitle className="text-lg flex-1">{resource.title}</CardTitle>
+                          <div className="flex items-center gap-2">
+                            {resource.language === "bn" && <Badge variant="secondary">বাংলা</Badge>}
+                            {expandedId === resource.id ? (
+                              <ChevronUp className="h-5 w-5" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5" />
+                            )}
+                          </div>
                         </div>
                         <CardDescription>{resource.description}</CardDescription>
                       </CardHeader>
-                      {resource.tags && resource.tags.length > 0 && (
-                        <CardContent>
-                          <div className="flex flex-wrap gap-2">
-                            {resource.tags.map((tag: string) => (
-                              <Badge key={tag} variant="outline" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
+
+                      {/* Expanded Content */}
+                      {expandedId === resource.id && (
+                        <CardContent className="space-y-4 border-t pt-4">
+                          {resource.description && (
+                            <div className="prose prose-sm max-w-none">
+                              <p className="text-sm text-foreground whitespace-pre-wrap">{resource.description}</p>
+                            </div>
+                          )}
+
+                          {resource.tags && resource.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {resource.tags.map((tag: string) => (
+                                <Badge key={tag} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+
+                          {resource.content_url && (
+                            <Button asChild className="w-full">
+                              <a
+                                href={resource.content_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2"
+                              >
+                                Learn More
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </Button>
+                          )}
                         </CardContent>
                       )}
                     </Card>
@@ -77,7 +142,7 @@ export default async function ResourcesPage() {
             )
           })}
 
-          {(!resources || resources.length === 0) && (
+          {(!resources || resources.length === 0) && !loading && (
             <Card>
               <CardContent className="text-center py-12">
                 <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

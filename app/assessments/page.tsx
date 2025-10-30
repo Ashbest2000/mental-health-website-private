@@ -149,6 +149,70 @@ export default async function AssessmentsPage() {
                 </Link>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Brain className="h-6 w-6 text-primary" />
+                      <CardTitle>Autism Spectrum Screening (AQ-10)</CardTitle>
+                    </div>
+                    <CardDescription>
+                      The Autism Quotient-10 helps identify traits associated with autism spectrum. Takes about 5
+                      minutes.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-6 mb-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>5 minutes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>10 questions</span>
+                  </div>
+                </div>
+                <Link href="/assessments/autism">
+                  <Button>Start Autism Screening</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Brain className="h-6 w-6 text-primary" />
+                      <CardTitle>Psychotic Symptoms Screening</CardTitle>
+                    </div>
+                    <CardDescription>
+                      This screening helps identify potential psychotic symptoms. Takes about 5 minutes. If experiencing
+                      severe symptoms, seek immediate professional help.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-6 mb-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>5 minutes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>10 questions</span>
+                  </div>
+                </div>
+                <Link href="/assessments/schizophrenia">
+                  <Button>Start Psychotic Symptoms Screening</Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
