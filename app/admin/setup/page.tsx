@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 
+export const dynamic = "force-dynamic"
+
 export default function AdminSetupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
