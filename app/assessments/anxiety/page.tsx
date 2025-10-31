@@ -99,7 +99,7 @@ export default function AnxietyAssessmentPage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-medium leading-relaxed">{GAD7_QUESTIONS[currentQuestion]}</h3>
 
-                <RadioGroup value={answers[currentQuestion]} onValueChange={handleAnswer}>
+                <RadioGroup key={currentQuestion} value={answers[currentQuestion] || ""} onValueChange={handleAnswer}>
                   {OPTIONS.map((option) => (
                     <div key={option.value} className="flex items-center space-x-3 space-y-0">
                       <RadioGroupItem value={option.value} id={`option-${currentQuestion}-${option.value}`} />
