@@ -243,6 +243,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* ADHD Test */}
             <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-lg group overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-primary to-primary/50"></div>
               <CardHeader>
@@ -264,6 +265,7 @@ export default function HomePage() {
               </div>
             </Card>
 
+            {/* Depression Test */}
             <Card className="border-2 hover:border-secondary/50 transition-all hover:shadow-lg group overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-secondary to-secondary/50"></div>
               <CardHeader>
@@ -285,6 +287,7 @@ export default function HomePage() {
               </div>
             </Card>
 
+            {/* Anxiety Test */}
             <Card className="border-2 hover:border-accent/50 transition-all hover:shadow-lg group overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-accent to-accent/50"></div>
               <CardHeader>
@@ -305,6 +308,7 @@ export default function HomePage() {
               </div>
             </Card>
 
+            {/* Autism Spectrum Test */}
             <Card className="border-2 hover:border-chart-4/50 transition-all hover:shadow-lg group overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-chart-4 to-chart-4/50"></div>
               <CardHeader>
@@ -313,19 +317,20 @@ export default function HomePage() {
                 </div>
                 <CardTitle>Autism Spectrum Screening</CardTitle>
                 <CardDescription>
-                  Preliminary screening for autism spectrum characteristics. Helps identify if professional evaluation
-                  is needed.
+                  Take the AQ-10 screening test for autism spectrum characteristics. Helps identify if professional
+                  evaluation is needed.
                 </CardDescription>
               </CardHeader>
               <div className="px-6 pb-6">
-                <Link href="/assessments">
-                  <Button size="sm" className="w-full bg-transparent" variant="outline">
-                    Coming Soon
+                <Link href="/assessments/autism">
+                  <Button size="sm" className="w-full">
+                    Take Autism Test
                   </Button>
                 </Link>
               </div>
             </Card>
 
+            {/* Schizophrenia Test */}
             <Card className="border-2 hover:border-chart-5/50 transition-all hover:shadow-lg group overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-chart-5 to-chart-5/50"></div>
               <CardHeader>
@@ -339,29 +344,75 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
               <div className="px-6 pb-6">
-                <Link href="/assessments">
-                  <Button size="sm" className="w-full bg-transparent" variant="outline">
-                    Coming Soon
+                <Link href="/assessments/schizophrenia">
+                  <Button size="sm" className="w-full">
+                    Take Schizophrenia Test
                   </Button>
                 </Link>
               </div>
             </Card>
 
+            {/* OCD Test */}
             <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-lg group overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
+              <div className="h-2 bg-gradient-to-r from-primary to-primary/50"></div>
               <CardHeader>
                 <div className="p-3 bg-primary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
-                  <TestTube className="h-10 w-10 text-primary" />
+                  <Brain className="h-10 w-10 text-primary" />
                 </div>
-                <CardTitle>All Assessments</CardTitle>
+                <CardTitle>OCD Screening</CardTitle>
                 <CardDescription>
-                  View all available screening tests and track your assessment history. Compare results over time.
+                  Take the FOCI screening test to assess for obsessive-compulsive symptoms including obsessions and
+                  compulsions.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments/ocd">
+                  <Button size="sm" className="w-full">
+                    Take OCD Test
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            {/* PTSD Test */}
+            <Card className="border-2 hover:border-secondary/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-secondary to-secondary/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-secondary/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <Heart className="h-10 w-10 text-secondary" />
+                </div>
+                <CardTitle>PTSD Screening</CardTitle>
+                <CardDescription>
+                  Take the PCL-5 screening test to assess for post-traumatic stress symptoms and trauma-related
+                  concerns.
+                </CardDescription>
+              </CardHeader>
+              <div className="px-6 pb-6">
+                <Link href="/assessments/ptsd">
+                  <Button size="sm" className="w-full">
+                    Take PTSD Test
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            {/* Track Your Progress */}
+            <Card className="border-2 hover:border-accent/50 transition-all hover:shadow-lg group overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-accent to-accent/50"></div>
+              <CardHeader>
+                <div className="p-3 bg-accent/10 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform">
+                  <TestTube className="h-10 w-10 text-accent" />
+                </div>
+                <CardTitle>Track Your Progress</CardTitle>
+                <CardDescription>
+                  View all your assessment results in one place. Track changes over time and see your mental health
+                  journey.
                 </CardDescription>
               </CardHeader>
               <div className="px-6 pb-6">
                 <Link href="/assessments">
                   <Button size="sm" className="w-full">
-                    View All Tests
+                    View Assessment History
                   </Button>
                 </Link>
               </div>

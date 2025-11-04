@@ -213,6 +213,72 @@ export default async function AssessmentsPage() {
                 </Link>
               </CardContent>
             </Card>
+
+            {/* OCD Screening Card */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Brain className="h-6 w-6 text-primary" />
+                      <CardTitle>OCD Screening (FOCI)</CardTitle>
+                    </div>
+                    <CardDescription>
+                      The Florida Obsessive-Compulsive Inventory screens for OCD symptoms and compulsive behaviors.
+                      Takes about 5 minutes.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-6 mb-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>5 minutes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>10 questions</span>
+                  </div>
+                </div>
+                <Link href="/assessments/ocd">
+                  <Button>Start OCD Screening</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* PTSD Screening Card */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Heart className="h-6 w-6 text-primary" />
+                      <CardTitle>PTSD Screening (PCL-5)</CardTitle>
+                    </div>
+                    <CardDescription>
+                      The PTSD Checklist for DSM-5 screens for post-traumatic stress disorder symptoms. Takes about 5
+                      minutes.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-6 mb-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>5 minutes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>10 questions</span>
+                  </div>
+                </div>
+                <Link href="/assessments/ptsd">
+                  <Button>Start PTSD Screening</Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

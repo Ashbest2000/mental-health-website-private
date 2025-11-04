@@ -12,9 +12,18 @@ export default async function DashboardPage() {
   const supabase = await createClient()
 
   // Fetch user profile
-  const { data: profile } = await supabase.from("user_profiles").select("*").eq("id", user.id).single()
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle()
 
-  const { data: adminRole } = await supabase.from("admin_roles").select("role").eq("user_id", user.id).single()
+  // Fetch admin role
+  const { data: adminRole, error: adminError } = await supabase
+    .from("admin_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle()
 
   // Fetch recent diagnostic results
   const { data: recentTests } = await supabase
