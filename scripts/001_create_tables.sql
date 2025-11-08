@@ -101,61 +101,61 @@ ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE institutions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_profiles
-CREATE POLICY IF NOT EXISTS "Users can view own profile" ON user_profiles
+CREATE POLICY "Users can view own profile" ON user_profiles
   FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own profile" ON user_profiles
+CREATE POLICY "Users can update own profile" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own profile" ON user_profiles
+CREATE POLICY "Users can insert own profile" ON user_profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- RLS Policies for diagnostic_results
-CREATE POLICY IF NOT EXISTS "Users can view own results" ON diagnostic_results
+CREATE POLICY "Users can view own results" ON diagnostic_results
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own results" ON diagnostic_results
+CREATE POLICY "Users can insert own results" ON diagnostic_results
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- RLS Policies for journal_entries
-CREATE POLICY IF NOT EXISTS "Users can view own journal" ON journal_entries
+CREATE POLICY "Users can view own journal" ON journal_entries
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own journal" ON journal_entries
+CREATE POLICY "Users can insert own journal" ON journal_entries
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own journal" ON journal_entries
+CREATE POLICY "Users can update own journal" ON journal_entries
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can delete own journal" ON journal_entries
+CREATE POLICY "Users can delete own journal" ON journal_entries
   FOR DELETE USING (auth.uid() = id);
 
 -- RLS Policies for chat_messages
-CREATE POLICY IF NOT EXISTS "Users can view own messages" ON chat_messages
+CREATE POLICY "Users can view own messages" ON chat_messages
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own messages" ON chat_messages
+CREATE POLICY "Users can insert own messages" ON chat_messages
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- RLS Policies for crisis_alerts
-CREATE POLICY IF NOT EXISTS "Users can view own alerts" ON crisis_alerts
+CREATE POLICY "Users can view own alerts" ON crisis_alerts
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Volunteers can view assigned alerts" ON crisis_alerts
+CREATE POLICY "Volunteers can view assigned alerts" ON crisis_alerts
   FOR SELECT USING (
     auth.uid() = assigned_volunteer_id OR
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_volunteer = TRUE)
   );
 
-CREATE POLICY IF NOT EXISTS "Users can create alerts" ON crisis_alerts
+CREATE POLICY "Users can create alerts" ON crisis_alerts
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- RLS Policies for resources (public read)
-CREATE POLICY IF NOT EXISTS "Anyone can view resources" ON resources
+CREATE POLICY "Anyone can view resources" ON resources
   FOR SELECT USING (TRUE);
 
 -- RLS Policies for institutions (public read)
-CREATE POLICY IF NOT EXISTS "Anyone can view institutions" ON institutions
+CREATE POLICY "Anyone can view institutions" ON institutions
   FOR SELECT USING (TRUE);
 
 -- Create indexes for better performance
