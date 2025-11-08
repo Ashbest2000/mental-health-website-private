@@ -13,10 +13,18 @@ export function ChatClient() {
   const [crisisDetected, setCrisisDetected] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const {
+    messages,
+    input = "",
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+  } = useChat({
     api: "/api/chat",
+    onError: (error) => {
+      console.error("[v0] Chat error:", error)
+    },
     onFinish: (message) => {
-      // Check if the response indicates crisis
       if (message.content.includes("[CRISIS_DETECTED]")) {
         setCrisisDetected(true)
       }
@@ -156,7 +164,7 @@ export function ChatClient() {
               disabled={isLoading}
               className="flex-1"
             />
-            <Button type="submit" disabled={isLoading || !input.trim()}>
+            <Button type="submit" disabled={isLoading || input.length === 0}>
               <Send className="h-4 w-4" />
             </Button>
           </form>
