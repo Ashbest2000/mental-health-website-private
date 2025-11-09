@@ -161,7 +161,7 @@ export function ChatClient() {
               value={input}
               onChange={handleInputChange}
               placeholder="Type your message..."
-              disabled={isLoading}
+              disabled={false} // Updated Input to not be disabled
               className="flex-1"
             />
             <Button type="submit" disabled={isLoading || input.length === 0}>
