@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useChat } from "@ai-sdk/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,27 +8,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Send, Bot, User, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+interface Message {
+  id: string
+  role: "user" | "assistant"
+  content: string
+}
+
 export function ChatClient() {
   const [crisisDetected, setCrisisDetected] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  const {
-    messages,
-    input = "",
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-  } = useChat({
-    api: "/api/chat",
-    onError: (error) => {
-      console.error("[v0] Chat error:", error)
-    },
-    onFinish: (message) => {
-      if (message.content.includes("[CRISIS_DETECTED]")) {
-        setCrisisDetected(true)
-      }
-    },
-  })
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -39,9 +29,117 @@ export function ChatClient() {
     scrollToBottom()
   }, [messages])
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value)
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const messageToSend = input.trim()
+    if (!messageToSend || isLoading) return
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: messageToSend,
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error("API Error:", response.status, errorText)
+        throw new Error(`Failed to send message: ${response.status} ${errorText}`)
+      }
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "",
+      }
+
+      setMessages((prev) => [...prev, assistantMessage])
+
+      if (reader) {
+        let buffer = ""
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split("\n")
+          buffer = lines.pop() || ""
+
+          for (const line of lines) {
+            if (line.startsWith("0:")) {
+              try {
+                const data = line.slice(2).trim()
+                if (data) {
+                  const parsed = JSON.parse(data)
+                  if (parsed.type === "text-delta" && parsed.textDelta) {
+                    assistantMessage.content += parsed.textDelta
+                    setMessages((prev) => {
+                      const updated = [...prev]
+                      const lastMsg = updated[updated.length - 1]
+                      if (lastMsg && lastMsg.role === "assistant" && lastMsg.id === assistantMessage.id) {
+                        lastMsg.content = assistantMessage.content
+                      }
+                      return updated
+                    })
+                  }
+                }
+              } catch (e) {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
+
+      const finalContent = assistantMessage.content
+      if (finalContent.includes("[CRISIS_DETECTED]")) {
+        setCrisisDetected(true)
+      }
+    } catch (error: any) {
+      console.error("Chat error:", error)
+      const errorMessage = error?.message || "Sorry, I encountered an error. Please try again."
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          role: "assistant",
+          content: errorMessage.includes("401") || errorMessage.includes("Unauthorized")
+            ? "Please log in to use the chat feature."
+            : errorMessage,
+        },
+      ])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Support Chat</h1>
         <p className="text-muted-foreground">
@@ -49,7 +147,6 @@ export function ChatClient() {
         </p>
       </div>
 
-      {/* Crisis Alert */}
       {crisisDetected && (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-4 w-4" />
@@ -76,7 +173,6 @@ export function ChatClient() {
         </Alert>
       )}
 
-      {/* Chat Card */}
       <Card className="h-[600px] flex flex-col">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
@@ -85,7 +181,6 @@ export function ChatClient() {
           </CardTitle>
         </CardHeader>
 
-        {/* Messages */}
         <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center py-12">
@@ -154,24 +249,23 @@ export function ChatClient() {
           <div ref={messagesEndRef} />
         </CardContent>
 
-        {/* Input */}
         <div className="border-t p-4">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleFormSubmit} className="flex gap-2">
             <Input
               value={input}
               onChange={handleInputChange}
               placeholder="Type your message..."
-              disabled={false} // Updated Input to not be disabled
+              disabled={isLoading}
               className="flex-1"
+              autoFocus
             />
-            <Button type="submit" disabled={isLoading || input.length === 0}>
+            <Button type="submit" disabled={isLoading || !input || input.length === 0}>
               <Send className="h-4 w-4" />
             </Button>
           </form>
         </div>
       </Card>
 
-      {/* Info */}
       <p className="text-xs text-muted-foreground text-center mt-4">
         This AI assistant provides support and information but is not a replacement for professional mental health care.
       </p>

@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
-import { streamText, type UIMessage, convertToModelMessages, consumeStream } from "ai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const maxDuration = 30
+
+const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY || "")
 
 export async function POST(req: Request) {
   const supabase = await createClient()
@@ -14,93 +16,77 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 })
   }
 
-  const { messages }: { messages: UIMessage[] } = await req.json()
-
-  // Analyze messages for crisis indicators
-  const userMessages = messages
-    .filter((m) => m.role === "user")
-    .map((m) => {
-      // Handle both string content and parts array
-      if (typeof m.content === "string") {
-        return m.content.toLowerCase()
-      }
-      // For UIMessage with parts
-      const textParts = m.parts?.filter((p: any) => p.type === "text") || []
-      return textParts
-        .map((p: any) => p.text)
-        .join(" ")
-        .toLowerCase()
-    })
-
-  const crisisKeywords = [
-    "suicide",
-    "kill myself",
-    "end my life",
-    "want to die",
-    "better off dead",
-    "self harm",
-    "hurt myself",
-    "cut myself",
-    "overdose",
-    "no reason to live",
-    "can't go on",
-    "ending it all",
-  ]
-
-  const hasCrisisIndicators = userMessages.some((msg: string) =>
-    crisisKeywords.some((keyword) => msg.includes(keyword)),
-  )
-
-  let riskLevel = "none"
-  if (hasCrisisIndicators) {
-    riskLevel = "critical"
-
-    // Create crisis alert in database
-    await supabase.from("crisis_alerts").insert({
-      user_id: user.id,
-      alert_type: "suicide",
-      severity: "critical",
-      message: userMessages[userMessages.length - 1],
-      status: "pending",
-    })
-
-    // Save message with crisis flag
-    const lastMessage = messages[messages.length - 1]
-    const lastMessageContent =
-      typeof lastMessage.content === "string"
-        ? lastMessage.content
-        : lastMessage.parts
-            ?.filter((p: any) => p.type === "text")
-            .map((p: any) => p.text)
-            .join(" ") || ""
-
-    await supabase.from("chat_messages").insert({
-      user_id: user.id,
-      role: "user",
-      content: lastMessageContent,
-      risk_level: "critical",
-      flagged_for_review: true,
-    })
-  } else {
-    // Save regular message
-    const lastMessage = messages[messages.length - 1]
-    const lastMessageContent =
-      typeof lastMessage.content === "string"
-        ? lastMessage.content
-        : lastMessage.parts
-            ?.filter((p: any) => p.type === "text")
-            .map((p: any) => p.text)
-            .join(" ") || ""
-
-    await supabase.from("chat_messages").insert({
-      user_id: user.id,
-      role: "user",
-      content: lastMessageContent,
-      risk_level: "none",
-    })
+  if (!process.env.AI_API_KEY) {
+    console.error("AI_API_KEY is not set in environment variables")
+    return new Response("Server configuration error: AI API key is missing", { status: 500 })
   }
 
-  const systemPrompt = `You are a compassionate mental health support AI assistant for MindCare Dhaka, a mental health platform serving people in Bangladesh. Your role is to:
+  try {
+    const { messages } = await req.json()
+
+    const userMessages = messages
+      .filter((m: any) => m.role === "user")
+      .map((m: any) => {
+        if (typeof m.content === "string") {
+          return m.content.toLowerCase()
+        }
+        return String(m.content || "").toLowerCase()
+      })
+
+    const crisisKeywords = [
+      "suicide",
+      "kill myself",
+      "end my life",
+      "want to die",
+      "better off dead",
+      "self harm",
+      "hurt myself",
+      "cut myself",
+      "overdose",
+      "no reason to live",
+      "can't go on",
+      "ending it all",
+    ]
+
+    const hasCrisisIndicators = userMessages.some((msg: string) =>
+      crisisKeywords.some((keyword) => msg.includes(keyword)),
+    )
+
+    let riskLevel = "none"
+    if (hasCrisisIndicators) {
+      riskLevel = "critical"
+
+      await supabase.from("crisis_alerts").insert({
+        user_id: user.id,
+        alert_type: "suicide",
+        severity: "critical",
+        message: userMessages[userMessages.length - 1],
+        status: "pending",
+      })
+
+      const lastMessage = messages[messages.length - 1] as any
+      const lastMessageContent = typeof lastMessage.content === "string" ? lastMessage.content : String(lastMessage.content || "")
+
+      await supabase.from("chat_messages").insert({
+        user_id: user.id,
+        role: "user",
+        content: lastMessageContent,
+        risk_level: "critical",
+        flagged_for_review: true,
+      })
+    } else {
+      const lastMessage = messages[messages.length - 1] as any
+      const lastMessageContent = typeof lastMessage.content === "string" ? lastMessage.content : String(lastMessage.content || "")
+
+      await supabase.from("chat_messages").insert({
+        user_id: user.id,
+        role: "user",
+        content: lastMessageContent,
+        risk_level: "none",
+      })
+    }
+
+    const systemPrompt = `You are a compassionate mental health support AI assistant for MindCare Dhaka, a mental health platform serving people in Bangladesh. Your role is to:
 
 1. Listen empathetically and validate feelings
 2. Provide emotional support and coping strategies
@@ -141,24 +127,66 @@ Start your response with [CRISIS_DETECTED] so the UI can show emergency resource
 
 Remember: You provide support and information, but you are not a replacement for professional mental health care.`
 
-  const result = streamText({
-    model: "openai/gpt-4o-mini",
-    system: systemPrompt,
-    messages: convertToModelMessages(messages),
-    abortSignal: req.signal,
-  })
+    const conversationHistory = messages.map((m: any) => ({
+      role: m.role === "user" ? "user" : "model",
+      parts: [{ text: typeof m.content === "string" ? m.content : String(m.content || "") }],
+    }))
 
-  // Save assistant response after streaming completes
-  result.text.then(async (text) => {
-    await supabase.from("chat_messages").insert({
-      user_id: user.id,
-      role: "assistant",
-      content: text,
-      risk_level: hasCrisisIndicators ? "critical" : "none",
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      systemInstruction: systemPrompt,
     })
-  })
 
-  return result.toUIMessageStreamResponse({
-    consumeSseStream: consumeStream,
-  })
+    const lastMessage = conversationHistory[conversationHistory.length - 1]
+    const history = conversationHistory.slice(0, -1)
+
+    const result = await model.generateContentStream({
+      contents: [...history, lastMessage],
+    })
+
+    const encoder = new TextEncoder()
+    let fullResponse = ""
+
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of result.stream) {
+            const text = chunk.text()
+            if (text) {
+              fullResponse += text
+              const escapedText = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r")
+              const data = `0:{"type":"text-delta","textDelta":"${escapedText}"}\n`
+              controller.enqueue(encoder.encode(data))
+            }
+          }
+
+          await supabase.from("chat_messages").insert({
+            user_id: user.id,
+            role: "assistant",
+            content: fullResponse,
+            risk_level: hasCrisisIndicators ? "critical" : "none",
+          })
+
+          controller.close()
+        } catch (error: any) {
+          console.error("Streaming error:", error)
+          controller.error(error)
+        }
+      },
+    })
+
+    return new Response(readableStream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
+    })
+  } catch (error: any) {
+    console.error("Chat API error:", error)
+    return new Response(
+      JSON.stringify({ error: error.message || "Internal server error" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    )
+  }
 }
